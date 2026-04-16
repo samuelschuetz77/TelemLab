@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  llama-cpp:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./Qwen3.5-2B-Q8_0.gguf:/models/Qwen3.5-2B-Q8_0.gguf:ro
+      - ./models:/models
+    environment:
+      LLAMA_ARG_MODEL: /models/Qwen3.5-2B-Q8_0.gguf
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
