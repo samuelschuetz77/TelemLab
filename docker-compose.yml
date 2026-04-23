@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   llama-cpp:
     image: ghcr.io/ggml-org/llama.cpp:server-cuda
@@ -17,14 +16,21 @@ services:
               count: 1
               capabilities: [gpu]
 
-  nvidia-exporter:
-    image: utkuozdemir/nvidia_gpu_exporter:latest
+  dcgm-exporter:
+    image: nvcr.io/nvidia/k8s/dcgm-exporter:3.3.5-3.4.0-ubuntu22.04
+    container_name: dcgm-exporter
+    runtime: nvidia
     ports:
       - "9400:9400"
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    cap_add:
+      - SYS_ADMIN 
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
-              count: 1
+              count: all
               capabilities: [gpu]
+    restart: unless-stopped
